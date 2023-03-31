@@ -38,6 +38,7 @@ const userSchema = new mongoose.Schema(
 );
 
 //METHODS
+// to encrypt the password so it can be secret
 userSchema.methods.encryptPassword = function (password) {
   if (!password) {
     return "";
@@ -48,6 +49,11 @@ userSchema.methods.encryptPassword = function (password) {
     return "";
   }
 };
+
+//authenticate to check password is correct when user is logging in
+userSchema.methods.authenticate = function(plainText){
+  return this.encryptPassword(plainText) === this.hashed_password;
+}
 
 //VIRTUAL FIELDS
 userSchema
