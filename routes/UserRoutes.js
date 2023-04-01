@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const { findUserById } = require("../controllers/UserController");
-const { requireSignin } = require("../controllers/AuthController");
+const { requireSignin, isAuth, isAdmin } = require("../controllers/AuthController");
 
 //it has userId and requireSignin middleware
-router.get("/secret/:userId", requireSignin, (req, res) => {
+router.get("/secret/:userId", requireSignin, isAuth, isAdmin, (req, res) => {
     res.json({
         user: req.profile
     })

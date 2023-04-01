@@ -71,8 +71,32 @@ exports.signout = (req, res) => {
 };
 
 //AUTHENTICATION WHERE SIGN IN REQUIRED
+// JWT provides me that the user must have to be logged and when it does it set the user in auth
 exports.requireSignin = jwt({
   secret: process.env.JWT_SECRET,
   algorithms: ["HS256"],
   userProperty: "auth",
 });
+
+//this method checks that the logged in user does not access another person details
+exports.isAuth = (req, res, next) => {
+  //when i hit the params userId it sets the profile
+  // and when user logged in jwt sets the auth property
+  let user = req.profile && req.auth && req.profile._id == req.auth._id;
+  if(!user){
+    return res.status(403).json({
+      error: "Access Denied!"
+    })
+  }
+  next();
+}
+
+//this method checks that the role must not be 0 for admin
+exports.isAdmin = (req, res, next) => {
+  if(req.profile.role === 0){
+    return res.status(403).json({
+      error: "Admin Resource. Access Denied!"
+    })
+  }
+  next();
+}
