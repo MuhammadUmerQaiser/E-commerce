@@ -1,7 +1,7 @@
 const userModel = require("../models/UserModel");
-const { errorHandler } = require("../helpers/dbErrorHandler");
+const { errorHandler } = require("../helpers/dbErrorHandler"); //for email uniquness
 const jwtToken = require("jsonwebtoken"); //to generate token when user signed in
-const expressJwt = require("express-jwt"); //to authorixation check
+var { expressjwt: jwt } = require("express-jwt"); //to authorisation check
 
 //SIGNUP
 exports.signup = (req, res) => {
@@ -69,3 +69,10 @@ exports.signout = (req, res) => {
     message: "Sign Out successfully.",
   });
 };
+
+//AUTHENTICATION WHERE SIGN IN REQUIRED
+exports.requireSignin = jwt({
+  secret: process.env.JWT_SECRET,
+  algorithms: ["HS256"],
+  userProperty: "auth",
+});
