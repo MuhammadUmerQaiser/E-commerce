@@ -10,6 +10,7 @@ const app = express();
 const authRouter = require("./routes/AuthRoutes"); //Auth ROUTES
 const userRouter = require("./routes/UserRoutes"); //USER ROUTES
 const categoryRouter = require("./routes/CategoryRoutes"); //CATEGORY ROUTES
+const productRouter = require("./routes/ProductRoutes"); //PRODUCT ROUTES
 
 const port = process.env.PORT || 8000; //PORT
 
@@ -35,6 +36,7 @@ app.use(expressValidator());
 app.use("/api", authRouter);
 app.use("/api", userRouter);
 app.use("/api", categoryRouter);
+app.use("/api", productRouter);
 
 app.listen(port, () => {
   console.log(`NODE IS RUNNING ON PORT ${port}`);
