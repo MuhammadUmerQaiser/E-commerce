@@ -6,6 +6,11 @@ const {
   getProduct,
   removeProduct,
   updateProduct,
+  getAllProducts,
+  getAllRelatedProducts,
+  getAllProductsCategories,
+  getProductsBySearch,
+  getProductPhoto,
 } = require("../controllers/ProductController");
 const { findUserById } = require("../controllers/UserController");
 const {
@@ -37,6 +42,16 @@ router.put(
   isAdmin, //AND THAT USER MUST HAVE TO BE ADMIN
   updateProduct //CONTROLLER
 );
+// get all products or get products according to query
+router.get("/products", getAllProducts);
+// get all products related to that category
+router.get("/products/related/:productId", getAllRelatedProducts);
+// get all products category
+router.get("/products/categories", getAllProductsCategories);
+// get all products by search
+router.post("/products/by/search", getProductsBySearch);
+// get all products image
+router.get("/product/photo/:productId", getProductPhoto);
 
 //param --> wheneever the url or route get the userId variable it goes to that method/controller and get the user by that id
 router.param("userId", findUserById);

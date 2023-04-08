@@ -178,3 +178,140 @@ exports.updateProduct = (req, res) => {
       });
   });
 };
+
+/*
+get products by sell/arrival
+means the products which has been sold most get first or arrival means the product which is newly created gets first and this both things handled by according to query which is send by client side
+if no query or params are given then return all products
+by sell -----> /products?sortBy=sold&order=desc&limit=4
+by arrival -----> /products?sortBy=createdAt&order=desc&limit=4
+*/
+
+exports.getAllProducts = (req, res) => {
+  // if anything is coming in url then it can be get by .query
+  let order = req.query.order ? req.query.order : "asc";
+  let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
+  let limit = req.query.limit ? parseInt(req.query.limit) : 6;
+
+  productModel
+    .find()
+    .select("-photo") //this means we do not want photo in that data
+    .populate("category") //will tell the data there is relation with category table and get the data of that id
+    .sort([[sortBy, order]])
+    .limit(limit)
+    .exec()
+    .then((products) => {
+      res.json(products);
+      // res.send(products)
+    })
+    .catch((err) => {
+      return res.status(400).json({
+        error: "Product not found",
+      });
+    });
+};
+
+/* 
+it will get the products with same category but will not list that product through which we are calling other products
+*/
+
+exports.getAllRelatedProducts = (req, res) => {
+  let limit = req.query.limit ? parseInt(req.query.limit) : 6;
+
+  productModel
+    .find({ _id: { $ne: req.product }, category: req.product.category }) //$ne means does not show that product and category means show the same category
+    .select("-photo")
+    .limit(limit)
+    .populate("category", "_id name") //now only show id and name
+    .exec()
+    .then((products) => {
+      res.json(products);
+      // res.send(products)
+    })
+    .catch((err) => {
+      return res.status(400).json({
+        error: "Product not found",
+      });
+    });
+};
+
+/**
+ * get the categories of all products
+ */
+
+exports.getAllProductsCategories = (req, res) => {
+  //distinct method get the all the distinct categories
+  productModel
+    .distinct("category", {})
+    .then((categories) => {
+      res.json(categories);
+    })
+    .catch((err) => {
+      return res.status(400).json({
+        error: "Categories not found",
+      });
+    });
+};
+
+/**
+ * list products by search
+ * we will show categories in checkbox and price range in radio buttons
+ * as the user clicks on those checkboxes or radio buttons
+ * we will make api request and show the products to users based on what he wants
+ */
+
+exports.getProductsBySearch = (req, res) => {
+  let order = req.body.order ? req.body.order : "desc";
+  let sortBy = req.body.sortBy ? req.body.sortBy : "_id";
+  let limit = req.body.limit ? parseInt(req.body.limit) : 100;
+  let skip = parseInt(req.body.skip);
+  let findArgs = {};
+
+  for (let key in req.body.filters) {
+    if (req.body.filters[key].length > 0) {
+      if (key == "price") {
+        //gte ----- greater than price [0-10]
+        //lte ---- less than 10
+        findArgs[key] = {
+          $gte: req.body.filters[key][0], //store greater than value in this
+          $lte: req.body.filters[key][1], //store less than value in this
+        };
+      } else {
+        findArgs[key] = req.body.filters[key];
+      }
+    }
+  }
+
+  productModel
+    .find(findArgs)
+    .select("-photo")
+    .populate("category")
+    .sort([[sortBy, order]])
+    .skip(skip)
+    .limit(limit)
+    .exec()
+    .then((products) => {
+      res.json({
+        size: products.length,
+        products,
+      });
+    })
+    .catch((err) => {
+      return res.status(400).json({
+        error: "Products not found",
+      });
+    });
+};
+
+/**
+ * as we know we are getting products details without photo
+ * so we will create a method which will work as a middleware
+ */
+exports.getProductPhoto = (req, res, next) => {
+  if (req.product.photo.data) {
+    //it means we have image
+    res.set("Content-Type", req.product.photo.contentType);
+    return res.send(req.product.photo.data);
+  }
+  next();
+};
