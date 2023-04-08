@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const expressValidator = require("express-validator");
+const cors = require("cors"); //as we are making frontend on other site therefore we are using this
 require("dotenv").config();
 const app = express();
 //IMPORT ROUTES
@@ -31,6 +32,7 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(expressValidator());
+app.use(cors());
 
 //ROUTES
 app.use("/api", authRouter);
