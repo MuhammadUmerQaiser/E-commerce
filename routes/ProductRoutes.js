@@ -11,6 +11,7 @@ const {
   getAllProductsCategories,
   getProductsBySearch,
   getProductPhoto,
+  getProductsListSearch,
 } = require("../controllers/ProductController");
 const { findUserById } = require("../controllers/UserController");
 const {
@@ -44,6 +45,8 @@ router.put(
 );
 // get all products or get products according to query
 router.get("/products", getAllProducts);
+//get produts with search filter
+router.get("/products/search", getProductsListSearch);
 // get all products related to that category
 router.get("/products/related/:productId", getAllRelatedProducts);
 // get all products category

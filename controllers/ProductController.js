@@ -3,6 +3,7 @@ const _ = require("lodash"); //will use to update the form data
 const fs = require("fs"); //IT IS USED TO READ FILES AND WHEN WE ARE WORKING WITH FILES
 const productModel = require("../models/ProductModel");
 const { errorHandler } = require("../helpers/dbErrorHandler"); //for error check
+const ProductModel = require("../models/ProductModel");
 
 //AS WE ARE UPLOADING IMAGE THATS WHY WE ARE USING FORM DATA NOT JSON FORMAT BECAUSE OF THIS WE ARE USING THAT FORMIDABLE PACKAGE
 
@@ -314,4 +315,34 @@ exports.getProductPhoto = (req, res, next) => {
     return res.send(req.product.photo.data);
   }
   next();
+};
+
+/**
+ * we will get the products by aplying seacrh product name and category
+ */
+exports.getProductsListSearch = (req, res) => {
+  //create a query object to hold search value
+  const query = {};
+  //assign search value to query.name
+  if (req.query.search) {
+    query.name = { $regex: req.query.search, $options: "i" }; //this i will make the value to small letters
+    //assign category value to query.category
+    if (req.query.category && req.query.category != "All") {
+      query.category = req.query.category;
+    }
+
+    //find the product based on the query
+    ProductModel.find(query)
+      .select("-photo")
+      .then((products) => {
+        res.json(products);
+      })
+      .catch((err) => {
+        if (err) {
+          return res.status(400).json({
+            error: errorHandler(err),
+          });
+        }
+      });
+  }
 };
