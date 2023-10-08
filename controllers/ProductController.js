@@ -11,6 +11,7 @@ const ProductModel = require("../models/ProductModel");
 exports.findProductById = (req, res, next, id) => {
   productModel
     .findById(id)
+    .populate("category")
     .exec()
     .then((product) => {
       if (!product) {
