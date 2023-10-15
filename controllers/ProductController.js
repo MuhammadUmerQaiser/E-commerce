@@ -347,3 +347,23 @@ exports.getProductsListSearch = (req, res) => {
       });
   }
 };
+
+exports.decreaseQunatityOfProductAfterPurchase = (req, res, next) => {
+  let bulkOps = req.body.order.products.map((item) => {
+    return {
+      updateOne: {
+        filter: { _id: item._id },
+        update: { $inc: { quantity: -item.count, sold: +item.count } },
+      },
+    };
+  });
+
+  productModel
+    .bulkWrite(bulkOps, {})
+    .then(() => {
+      next();
+    })
+    .catch((err) => {
+      return res.status(400).json({ error: "Could not update product" });
+    });
+};

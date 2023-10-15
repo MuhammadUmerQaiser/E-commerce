@@ -13,6 +13,7 @@ const userRouter = require("./routes/UserRoutes"); //USER ROUTES
 const categoryRouter = require("./routes/CategoryRoutes"); //CATEGORY ROUTES
 const productRouter = require("./routes/ProductRoutes"); //PRODUCT ROUTES
 const braintreeRouter = require("./routes/BraintreeRoutes"); //BRAINTREE ROUTES
+const orderRouter = require("./routes/OrderRoutes"); //ORDER ROUTES
 
 const port = process.env.PORT || 8000; //PORT
 
@@ -41,6 +42,7 @@ app.use("/api", userRouter);
 app.use("/api", categoryRouter);
 app.use("/api", productRouter);
 app.use("/api", braintreeRouter);
+app.use("/api", orderRouter);
 
 app.listen(port, () => {
   console.log(`NODE IS RUNNING ON PORT ${port}`);
