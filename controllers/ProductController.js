@@ -129,23 +129,6 @@ exports.updateProduct = (req, res) => {
       });
     }
 
-    //get all the data from fields
-    const { name, description, quantity, category, price, shipping } = fields;
-
-    // check validation
-    if (
-      !name ||
-      !description ||
-      !quantity ||
-      !category ||
-      !price ||
-      !shipping
-    ) {
-      return res.status(400).json({
-        error: "All fields are required",
-      });
-    }
-
     let product = req.product; //it takes the fields data to model
     product = _.extend(product, fields);
 
@@ -161,11 +144,7 @@ exports.updateProduct = (req, res) => {
       //we create the photo object in model that's why product.photo.data
       product.photo.data = fs.readFileSync(files.photo.filepath);
       product.photo.contentType = files.photo.mimetype;
-    } else {
-      return res.status(400).json({
-        error: "Image is required",
-      });
-    }
+    } 
 
     //now save the date or create the data
     product
