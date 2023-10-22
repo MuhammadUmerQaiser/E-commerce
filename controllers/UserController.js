@@ -1,3 +1,5 @@
+const { errorHandler } = require("../helpers/dbErrorHandler");
+const { Order } = require("../models/OrderModel");
 const userModel = require("../models/UserModel");
 
 //FIND THE USER BY ID
@@ -76,6 +78,21 @@ exports.addOrderToUserHistory = (req, res, next) => {
     .catch((error) => {
       return res.status(400).json({
         error: "Could not update user purchase history",
+      });
+    });
+};
+
+exports.userPurchaseHistory = (req, res) => {
+  Order.find({ user: req.profile._id })
+    .populate("user", "_id name")
+    .sort("-created")
+    .exec()
+    .then((orders) => {
+      return res.json(orders);
+    })
+    .catch((err) => {
+      return res.status(400).json({
+        error: errorHandler(err),
       });
     });
 };

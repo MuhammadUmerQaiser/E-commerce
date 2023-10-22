@@ -4,6 +4,7 @@ const {
   findUserById,
   getUser,
   updateUser,
+  userPurchaseHistory,
 } = require("../controllers/UserController");
 const {
   requireSignin,
@@ -29,6 +30,13 @@ router.put(
   requireSignin, //SIGN IN REQUIRED
   isAuth, //SIGNED IN USER CAN ACCESS
   updateUser //CONTROLLER
+);
+
+router.get(
+  "/orders/by/user/:userId",
+  requireSignin, //SIGN IN REQUIRED
+  isAuth, //SIGNED IN USER CAN ACCESS
+  userPurchaseHistory //CONTROLLER
 );
 
 //param --> wheneever the url or route get the userId variable it goes to that method/controller and get the user by that id
